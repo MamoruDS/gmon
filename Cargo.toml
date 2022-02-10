@@ -1,0 +1,14 @@
+[package]
+name = "gmon"
+version = "0.1.0"
+description = "A cli-tool for querying and monitoring GPU status"
+repository = "https://github.com/MamoruDS/gmon"
+authors = ["MamoruDS <mamoruds.io@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+quick-xml = { version = "0.22.0", features = ["serialize"] }
+serde = { version = "1.0.135", features = ["derive"] }
+sysinfo = "0.23.0"
