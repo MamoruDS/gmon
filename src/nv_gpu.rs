@@ -1,5 +1,13 @@
+use crate::utils::exec;
+use quick_xml::de::from_str;
 use serde::{Deserialize, Deserializer};
 use std::fmt;
+
+// TODO: Result<GPUInfo, Err>
+pub fn get_nvidia_gpu_info() -> GPUInfo {
+    let out = exec("nvidia-smi", Some(vec!["-q", "-x"])).unwrap();
+    from_str(&out).unwrap()
+}
 
 #[derive(Debug, PartialEq)]
 pub enum ValidValue {
@@ -240,7 +248,7 @@ pub struct GPU {
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
-pub struct Log {
+pub struct GPUInfo {
     pub timestamp: String,
     pub driver_version: String,
     pub cuda_version: String,
