@@ -86,7 +86,7 @@ impl Docker {
             "docker",
             "inspect",
             "--format",
-            r#"'{{.ID}} {{.State.Pid}} {{.Name}}'"#,
+            r#"'{{.ID}} {{.State.Pid}} {{.Name}}"#,
         ]);
         let cmd_out = cmd.stdin(out_q).output().unwrap();
         let mut out = String::from_utf8(cmd_out.stdout).unwrap();
