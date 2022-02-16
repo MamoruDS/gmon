@@ -2,6 +2,7 @@ use crate::utils::exec;
 use quick_xml::de::from_str;
 use serde::{Deserialize, Deserializer};
 use std::fmt;
+use std::ops;
 
 // TODO: Result<GPUInfo, Err>
 pub fn get_nvidia_gpu_info() -> GPUInfo {
@@ -13,6 +14,21 @@ pub fn get_nvidia_gpu_info() -> GPUInfo {
 pub enum ValidValue {
     INT(isize),
     FLOAT(f64),
+}
+
+impl ops::Div for &ValidValue {
+    type Output = f64;
+    fn div(self, rhs: Self) -> f64 {
+        let lhs: f64 = match self {
+            ValidValue::INT(v) => *v as f64,
+            ValidValue::FLOAT(v) => *v,
+        };
+        let rhs: f64 = match rhs {
+            ValidValue::INT(v) => *v as f64,
+            ValidValue::FLOAT(v) => *v,
+        };
+        lhs / rhs
+    }
 }
 
 impl fmt::Display for ValidValue {
@@ -28,6 +44,15 @@ impl fmt::Display for ValidValue {
 pub struct Value {
     pub val: ValidValue,
     pub unit: Option<String>,
+}
+
+impl Value {
+    pub fn val_as_isize(&self) -> isize {
+        match self.val {
+            ValidValue::FLOAT(v) => v.round() as isize,
+            ValidValue::INT(v) => v,
+        }
+    }
 }
 
 impl fmt::Display for Value {
