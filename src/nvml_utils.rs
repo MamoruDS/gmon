@@ -23,26 +23,20 @@ fn init_nvml(lib: &LibCandidate) -> Result<Nvml, NvmlError> {
 }
 
 pub fn nvml_initiate(custom_candidates: Option<&Vec<String>>) -> Result<Nvml, GMONError> {
-    match {
-        for can in custom_candidates
-            .unwrap_or(&vec![])
-            .iter()
-            .map(|s| LibCandidate::Custom(s))
-            .collect::<Vec<LibCandidate>>()
-            .iter()
-            .chain(NVML_LIB_CAN.iter())
-        {
-            match init_nvml(can) {
-                Ok(nvml) => {
-                    Some(nvml);
-                    break;
-                }
-                Err(_) => continue,
+    for can in custom_candidates
+        .unwrap_or(&vec![])
+        .iter()
+        .map(|s| LibCandidate::Custom(s))
+        .collect::<Vec<LibCandidate>>()
+        .iter()
+        .chain(NVML_LIB_CAN.iter())
+    {
+        match init_nvml(can) {
+            Ok(nvml) => {
+                return Ok(nvml);
             }
+            Err(_) => continue,
         }
-        None
-    } {
-        Some(nvml) => Ok(nvml),
-        None => Err(GMONError::NvmlInitError),
     }
+    Err(GMONError::NvmlInitError)
 }
