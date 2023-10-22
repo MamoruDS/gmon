@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use nvml_wrapper::error::NvmlError;
 use nvml_wrapper::Nvml;
 
-use super::super::error::GMONError;
+use super::super::error::BackendError;
 
 enum LibCandidate<'a> {
     Default,
@@ -22,7 +22,7 @@ fn init_nvml(lib: &LibCandidate) -> Result<Nvml, NvmlError> {
     }
 }
 
-pub fn nvml_initiate(custom_candidates: Option<&Vec<String>>) -> Result<Nvml, GMONError> {
+pub fn nvml_initiate(custom_candidates: Option<&Vec<String>>) -> Result<Nvml, BackendError> {
     for can in custom_candidates
         .unwrap_or(&vec![])
         .iter()
@@ -38,5 +38,5 @@ pub fn nvml_initiate(custom_candidates: Option<&Vec<String>>) -> Result<Nvml, GM
             Err(_) => continue,
         }
     }
-    Err(GMONError::NvmlInitError)
+    Err(BackendError::NvmlInitError)
 }
