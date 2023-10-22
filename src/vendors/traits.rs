@@ -1,7 +1,14 @@
 use super::error::BackendError;
 use super::types::{MemoryInfo, PowerInfo, Value};
 
-pub trait GpuProviderInfo<'a> {
+pub trait GpuProviderInfo<'a, T>
+where
+    T: GpuInfo<'a>,
+{
+    type IterType: Iterator<Item = T>;
+
+    fn gpu_iter(&'a self) -> Self::IterType;
+
     fn driver_version(&self) -> Result<Value<String>, BackendError>;
     fn device_count(&self) -> Result<Value<u32>, BackendError>;
 }

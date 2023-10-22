@@ -51,10 +51,6 @@ impl NvGpuProvider {
     //     })
     // }
 
-    pub fn gpu_iter(&self) -> NvGpuIter {
-        gpu_iter(&self.nvml)
-    }
-
     pub fn cuda_version(&self) -> Result<CudaVersion, BackendError> {
         let version = self
             .nvml
@@ -67,7 +63,13 @@ impl NvGpuProvider {
     }
 }
 
-impl<'a> GpuProviderInfo<'a> for NvGpuProvider {
+impl<'a> GpuProviderInfo<'a, NvGpu<'a>> for NvGpuProvider {
+    type IterType = NvGpuIter<'a>;
+
+    fn gpu_iter(&'a self) -> Self::IterType {
+        gpu_iter(&self.nvml)
+    }
+
     fn driver_version(&self) -> Result<Value<String>, BackendError> {
         let version = self
             .nvml
