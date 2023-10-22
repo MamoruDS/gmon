@@ -3,6 +3,6 @@ use clap::Parser;
 #[derive(Debug, Parser)]
 #[clap(version, about)]
 pub struct Args {
-    #[clap(long)]
-    pub docker_support: bool,
+    #[clap(long, short = 'c')]
+    pub container_support: bool,
 }
