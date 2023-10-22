@@ -1,7 +1,7 @@
 use nvml_wrapper::{self, enum_wrappers::device::TemperatureSensor, Nvml};
 
 use super::error::BackendError;
-use super::traits::GpuInfo;
+use super::traits::{GpuInfo, GpuProviderInfo};
 use super::types::{MemoryInfo, PowerInfo, Value};
 
 pub mod nvml_utils;
@@ -27,6 +27,62 @@ impl<'a> Iterator for NvGpuIter<'a> {
 
 pub fn gpu_iter<'a>(nvml: &'a Nvml) -> NvGpuIter<'a> {
     NvGpuIter { index: 0, nvml }
+}
+
+pub struct CudaVersion {
+    pub major: Value<i32>,
+    pub minor: Value<i32>,
+}
+
+pub struct NvGpuProvider {
+    nvml: Nvml,
+}
+
+impl NvGpuProvider {
+    pub fn new() -> Result<Self, BackendError> {
+        Ok(Self {
+            nvml: nvml_utils::nvml_initiate(None)?,
+        })
+    }
+
+    // pub fn new_with_lib(lib_candidates: &[String]) -> Result<Self, BackendError> {
+    //     Ok(Self {
+    //         nvml: nvml_utils::nvml_initiate(Some(lib_candidates))?,
+    //     })
+    // }
+
+    pub fn gpu_iter(&self) -> NvGpuIter {
+        gpu_iter(&self.nvml)
+    }
+
+    pub fn cuda_version(&self) -> Result<CudaVersion, BackendError> {
+        let version = self
+            .nvml
+            .sys_cuda_driver_version()
+            .map_err(BackendError::NvmlWrapperError)?;
+        Ok(CudaVersion {
+            major: Value::from(nvml_wrapper::cuda_driver_version_major(version)),
+            minor: Value::from(nvml_wrapper::cuda_driver_version_minor(version)),
+        })
+    }
+}
+
+impl<'a> GpuProviderInfo<'a> for NvGpuProvider {
+    fn driver_version(&self) -> Result<Value<String>, BackendError> {
+        let version = self
+            .nvml
+            .sys_driver_version()
+            .map_err(BackendError::NvmlWrapperError)?;
+        Ok(Value::from(version))
+    }
+
+    fn device_count(&self) -> Result<Value<u32>, BackendError> {
+        let count = self
+            .nvml
+            .device_count()
+            .map_err(BackendError::NvmlWrapperError)?;
+        Ok(Value::from(count))
+    }
 }
 
 pub struct NvGpu<'a> {
