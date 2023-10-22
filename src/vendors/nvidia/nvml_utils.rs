@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use nvml_wrapper::error::NvmlError;
 use nvml_wrapper::Nvml;
 
-use super::error::GMONError;
+use super::super::error::GMONError;
 
 enum LibCandidate<'a> {
     Default,

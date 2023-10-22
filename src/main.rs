@@ -1,5 +1,4 @@
 mod cli;
-mod error;
-mod nvml_utils;
+mod vendors;
 
 fn main() {}
